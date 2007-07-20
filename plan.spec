@@ -83,7 +83,14 @@ cd ./src
 ./configure 6 ;echo "--libdir=%{_libdir}" > /dev/null
 # (tv) fix build on x86_64:
 perl -pi -e "s,-L/usr/X11R6/lib,-L/usr/X11R6/%_lib," Makefile
+
+# Stupid upstream authors try to force 32-bit compilation on x86-64...
+%ifarch x86_64
+%make linux64
+%else
 %make
+%endif
+
 bunzip2 -c %SOURCE1 > ../language/plan.lang.norwegian
 
 %install
