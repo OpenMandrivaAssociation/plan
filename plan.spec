@@ -1,17 +1,17 @@
 %define	name	plan
-%define	version	1.9
-%define	release	%mkrel 13
-%define summary A X/Motif day planner
+%define	version	1.10.1
+%define	release	%mkrel 1
+%define summary A day planner
 
 Name:		%{name} 
 Summary:	%{summary}
 Version:	%{version} 
 Release:	%{release} 
-Source0:	%{name}-%{version}.tar.bz2
+Source0:	ftp://ftp.fu-berlin.de/unix/X11/apps/plan/%{name}-%{version}.tar.gz
 # Additional source for Norwegian translation which is not in the main distribution of plan yet
 Source1:	%{name}.lang.norwegian.bz2
 # Adds a launch script for plan and Mandriva Linux standards to the configure script
-Patch0:		plan-configure-and-launchscript.patch.bz2
+Patch0:		plan-configure-and-launchscript.patch
 URL:		http://www.bitrot.de/plan.html
 Group:		Office
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -101,14 +101,10 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/plan/holidays/
 install -m644 ./holiday/* -D $RPM_BUILD_ROOT%{_libdir}/plan/holidays/
 # Norwegian support is not included in the main distribution yet
 # %{__bunzip2} --stdout %SOURCE1 > $RPM_BUILD_ROOT%{_libdir}/plan/plan.lang.norwegian
-
-%{__bzip2} ./misc/plan.1
-%{__bzip2} ./misc/plan.4
-%{__bzip2} ./misc/netplan.1
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1/ $RPM_BUILD_ROOT%{_mandir}/man4/
-install -m644 ./misc/plan.1.bz2 $RPM_BUILD_ROOT%{_mandir}/man1/
-install -m644 ./misc/plan.4.bz2 $RPM_BUILD_ROOT%{_mandir}/man4/
-install -m644 ./misc/netplan.1.bz2 $RPM_BUILD_ROOT%{_mandir}/man1/
+install -m644 ./misc/plan.1 $RPM_BUILD_ROOT%{_mandir}/man1/
+install -m644 ./misc/plan.4 $RPM_BUILD_ROOT%{_mandir}/man4/
+install -m644 ./misc/netplan.1 $RPM_BUILD_ROOT%{_mandir}/man1/
 install -m755 ./misc/msschedule2plan  $RPM_BUILD_ROOT%{_bindir}/msschedule2plan
 sed -e s,'/usr/local/bin/perl','/usr/bin/perl',g ./misc/plan2vcs > $RPM_BUILD_ROOT%{_bindir}/plan2vcs
 chmod 755 $RPM_BUILD_ROOT%{_bindir}/plan2vcs
@@ -120,24 +116,31 @@ convert -resize 48x48 ./misc/plan.xpm ./misc/plan-48.png
 convert ./misc/plan-48.png -resize 16x16 ./misc/plan-16.png
 # Provice a 32x32 icon
 convert ./misc/plan-48.png -resize 32x32 ./misc/plan-32.png
-install -m644 ./misc/plan-32.png -D $RPM_BUILD_ROOT%{_iconsdir}/plan.png
-install -m644 ./misc/plan-16.png -D $RPM_BUILD_ROOT%{_miconsdir}/plan.png
-install -m644 ./misc/plan-48.png -D $RPM_BUILD_ROOT%{_liconsdir}/plan.png
-mkdir -p $RPM_BUILD_ROOT%{_menudir}/
-cat << EOF > $RPM_BUILD_ROOT%{_menudir}/%{name}
-?package(%{name}):command="%{_bindir}/plan" \
-		icon="plan.png" \
-		needs="x11" \
-		section="Office/Time Management" \
-		title="Plan" \
-		longtitle="Plan - a graphical day planner"
+install -m644 ./misc/plan-32.png -D $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/plan.png
+install -m644 ./misc/plan-16.png -D $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/apps/plan.png
+install -m644 ./misc/plan-48.png -D $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/plan.png
+
+mkdir -p %{buildroot}%{_datadir}/applications
+cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}.desktop <<EOF
+[Desktop Entry]
+Encoding=UTF-8
+Name=Plan
+Comment=A graphical day planner
+Exec=%{_bindir}/%{name} 
+Icon=%{name}
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=Motif;Office;ProjectManagement;
 EOF
 
 %post
 %{update_menus}
+%{update_icon_cache hicolor}
 
 %postun
 %{clean_menus}
+%{clean_icon_cache hicolor}
 
 %clean 
 rm -rf $RPM_BUILD_ROOT 
@@ -148,17 +151,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/plan
 %{_bindir}/pland
 %{_libdir}/plan/*
-%{_mandir}/man1/plan.1.bz2
-%{_mandir}/man4/plan.4.bz2
-%{_menudir}/*
-%{_iconsdir}/plan.png
-%{_miconsdir}/plan.png
-%{_liconsdir}/plan.png
+%{_mandir}/man1/plan.1*
+%{_mandir}/man4/plan.4*
+%{_iconsdir}/hicolor/16x16/apps/plan.png
+%{_iconsdir}/hicolor/32x32/apps/plan.png
+%{_iconsdir}/hicolor/48x48/apps/plan.png
+%{_datadir}/applications/mandriva-%{name}.desktop
 
 %files netplan
 %defattr(-,root,root)
 %{_bindir}/netplan
-%{_mandir}/man1/netplan.1.bz2
+%{_mandir}/man1/netplan.1*
 
 %files tools
 %defattr(-,root,root)
