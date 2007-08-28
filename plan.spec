@@ -130,7 +130,6 @@ install -m644 ./misc/plan-48.png -D $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/ap
 mkdir -p %{buildroot}%{_datadir}/applications
 cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}.desktop <<EOF
 [Desktop Entry]
-Encoding=UTF-8
 Name=Plan
 Comment=A graphical day planner
 Exec=%{_bindir}/%{name} 
