@@ -14,6 +14,7 @@ Source1:	%{name}.lang.norwegian.bz2
 Patch0:		plan-configure-and-launchscript.patch
 URL:		http://www.bitrot.de/plan.html
 Group:		Office
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 BuildRequires:	lesstif-devel 
 BuildRequires:  ImageMagick 
