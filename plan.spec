@@ -1,6 +1,6 @@
 %define	name	plan
 %define	version	1.10.1
-%define	release	%mkrel 3
+%define	release	%mkrel 4
 %define summary A day planner
 
 Name:		%{name} 
@@ -73,7 +73,7 @@ plan2vcs        - A perl script that converts a netplan file
 %prep
 %setup -q
 cd src
-%patch -p0
+%patch0 -p0
 cd ..
 
 %build
