@@ -1,6 +1,6 @@
 %define	name	plan
 %define	version	1.10.1
-%define	release	%mkrel 5
+%define	release	%mkrel 6
 %define summary A day planner
 
 Name:		%{name} 
@@ -16,9 +16,11 @@ URL:		http://www.bitrot.de/plan.html
 Group:		Office
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
-BuildRequires:	lesstif-devel 
 BuildRequires:  ImageMagick 
-BuildRequires:  X11-devel 
+BuildRequires:  libx11-devel
+BuildRequires:	libxt-devel
+BuildRequires:	libxmu-devel
+BuildRequires:	lesstif-devel
 BuildRequires:  bison
 BuildRequires:  flex
 
@@ -77,12 +79,13 @@ cd src
 cd ..
 
 %build
+%define Werror_cflags %nil
 cd ./src
 # It has a non-standard configure script - 6 tells it to use Mandriva Linux standards
 # The libdir part is a hack to make rpmlint shut up about no-libdir-spec
 ./configure 6 ;echo "--libdir=%{_libdir}" > /dev/null
 # (tv) fix build on x86_64:
-perl -pi -e "s,-L/usr/X11R6/lib,-L/usr/X11R6/%_lib," Makefile
+sed -i -e "s,-L/usr/X11R6/lib,-L%_libdir," -e "s#DEBUG=.*#DEBUG=%{optflags} %{ldflags}#" -e "s# -lXpm # #"  Makefile
 
 # Stupid upstream authors try to force 32-bit compilation on x86-64...
 %ifarch x86_64
