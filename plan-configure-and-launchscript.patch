@@ -1,0 +1,118 @@
+--- configure	2004-10-17 16:04:23.000000000 +0200
++++ configure.patched	2005-04-04 15:17:58.000000000 +0200
+@@ -49,6 +49,7 @@
+ 	echo "3 -- Silicon Graphics freeware (requires root privileges)"
+ 	echo "4 -- Debian Linux standard (requires root privileges)"
+ 	echo "5 -- SuSE Linux standard (requires root privileges)"
++	echo "6 -- Mandriva Linux standard (requires root privileges)"
+ 	readline
+ fi
+ 
+@@ -143,6 +144,28 @@
+ 	DEFTARGET=linux
+ 	HOLIDAY=/usr/lib/plan/holiday
+ 	;;
++  6 ) 	DIR=/usr/bin			# Mandriva Linux
++  	SBIN=/usr/sbin
++  	LIB=/usr/lib/plan
++	HELP=/usr/share/plan
++	NETPLANDIR=/var/lib/plan
++	MAN=/usr/share/man/man
++	CATMAN=NONE
++	PLANHOME=.plan.dir
++	PLANLOCK=
++	PLANDLOCK=
++	INCDIR=
++	LEX=lex
++	YACC=yacc
++	NOB_UID=65534
++	NOB_GID=65534
++	CPP_PATH='/usr/bin/cpp -P -I$(HELP)'
++	DOFORK=FALSE
++	JAPAN=
++	DEBUG="-O2"
++	DEFTARGET=linux
++	HOLIDAY=NONE
++	HOLIDAYDIR=$LIB/holidays/;;
+   mi)	DIR=/usr/local/mi/bin		# mental images
+ 	SBIN=
+ 	LIB=/usr/local/mi/lib
+@@ -337,6 +360,78 @@
+ 	s+^DEFTARGET=.*+DEFTARGET=$DEFTARGET+" Makefile > .conftemp
+ mv .conftemp Makefile
+ 
++#-----------------------------------------------------------------------------
++# Create the plan.bash launch script
++#-----------------------------------------------------------------------------
++
++echo -e "\n"
++
++# Don't bother creating the launch script if PLANHOME is not set.
++if [ "$PLANHOME" != "" ]; then
++
++echo "Will write launch script to ./plan.bash"
++
++# Make sure we always have a HOLIDAYDIR directory set, even if nothing is
++# installed into it.
++if [ "$HOLIDAYDIR" == "" ]; then
++	HOLIDAYDIR="$LIB/holidays/"
++fi
++
++cat << EOF > ./plan.bash
++#!/bin/bash
++# Plan launch script (0.1) by Eskild Hustvedt <eskild@mandriva.org>
++# This script will autodetect language and copy the holiday file the first time
++# plan is run. This script is licensed under the GNU General Public License
++# and comes with ABSOLUTELY NO WARRANTY
++if [ ! -e \$HOME/$PLANHOME ]; then
++	echo "Creating configuration files..."
++	mkdir -p \$HOME/.plan.dir
++	# Software language
++	case \$LANG in
++		nb_NO | nn_NO ) PLANLANG="Norwegian";;
++		de_DE ) PLANLANG="German" ;;
++		nl_NL ) PLANLANG="Dutch" ;;
++		fr_FR ) PLANLANG="French" ;;
++		it_IT ) PLANLANG="Italian" ;;
++		es_ES ) PLANLANG="Spanish" ;;
++		* ) PLANLANG="English" ;;
++	esac
++	# Holiday file
++	case \$LC_ADDRESS in
++		nb_NO | nn_NO | nb | nn | no_NO ) HOLIDAY="norway" ;;
++		en_US | us ) HOLIDAY="us" ;;
++		en_UK | uk ) HOLIDAY="uk" ;;
++		sv | sv_SE ) HOLIDAY="swedish";;
++		fr | fr_FR ) HOLIDAY="french" ;;
++		it | it_IT ) HOLIDAY="italy" ;;
++		el_GR ) HOLIDAY="greek" ;;
++		cs_CZ ) HOLIDAY="czech" ;;
++		da_DK ) HOLIDAY="denmark" ;;
++		nl_NL ) HOLIDAY="dutch" ;;
++		fi_FI ) HOLIDAY="finnish" ;;
++		de_DE ) HOLIDAY="german" ;;
++		hu_HU ) HOLIDAY="hungary" ;;
++		ja_JP ) HOLIDAY="japan" ;;
++		pt_PT ) HOLIDAY="portugal" ;;
++		sk_SK ) HOLIDAY="slovak" ;;
++		es_ES ) HOLIDAY="spain" ;;
++		* ) HOLIDAY="NULL";;
++	esac
++	# Write language
++	cat << END > \$HOME/$PLANHOME/dayplan
++plan
++L	\$PLANLANG
++END
++	# Copy holiday file
++	if [ "\$HOLIDAY" != "NULL" ] && [ -e ${HOLIDAYDIR}holiday_\$HOLIDAY ]; then
++		cat ${HOLIDAYDIR}holiday_\$HOLIDAY > \$HOME/$PLANHOME/holiday
++	fi
++fi
++$LIB/plan \$*
++EOF
++else echo "Will not write launchscript since no \$PLANDIR was set"
++fi
++
+ echo ""
+ echo " ---  Done  ---"
+ echo ""
