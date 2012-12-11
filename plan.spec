@@ -1,28 +1,22 @@
-%define	name	plan
-%define	version	1.10.1
-%define	release	%mkrel 6
-%define summary A day planner
-
-Name:		%{name} 
-Summary:	%{summary}
-Version:	%{version} 
-Release:	%{release} 
+Name:		plan
+Summary:	A day planner
+Version:	1.10.1
+Release:	7
+License:	GPL
+Group:		Office
+URL:		http://www.bitrot.de/plan.html
 Source0:	ftp://ftp.fu-berlin.de/unix/X11/apps/plan/%{name}-%{version}.tar.gz
 # Additional source for Norwegian translation which is not in the main distribution of plan yet
 Source1:	%{name}.lang.norwegian.bz2
 # Adds a launch script for plan and Mandriva Linux standards to the configure script
 Patch0:		plan-configure-and-launchscript.patch
-URL:		http://www.bitrot.de/plan.html
-Group:		Office
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-License:	GPL
-BuildRequires:  ImageMagick 
-BuildRequires:  libx11-devel
-BuildRequires:	libxt-devel
-BuildRequires:	libxmu-devel
+BuildRequires:	pkgconfig(x11)
+BuildRequires:	pkgconfig(xt)
+BuildRequires:	pkgconfig(xmu)
 BuildRequires:	lesstif-devel
-BuildRequires:  bison
-BuildRequires:  flex
+BuildRequires:	bison
+BuildRequires:	flex
+BuildRequires:	imagemagick
 
 %description
 plan is a schedule planner based on X/Motif. It displays a month calendar
@@ -44,9 +38,7 @@ information (everything except the date is optional):
 
 %package netplan
 Summary:	Netplan server for plan
-URL:		http://www.bitrot.de/plan.html
 Group:		Office
-License:	GPL
 
 %description netplan
 netplan enables plan to be multiuser using an IP server.
@@ -60,9 +52,7 @@ netplan is not required to use plan.
 
 %package tools
 Summary:	Various tools for use with plan
-URL:		http://www.bitrot.de/plan.html
 Group:		Office
-License:	GPL
 
 %description tools
 This package contains various tools for use with plan:
@@ -77,6 +67,7 @@ plan2vcs        - A perl script that converts a netplan file
 cd src
 %patch0 -p0
 cd ..
+find . -perm 0640 | xargs chmod 0644
 
 %build
 %define Werror_cflags %nil
@@ -97,7 +88,6 @@ sed -i -e "s,-L/usr/X11R6/lib,-L%_libdir," -e "s#DEBUG=.*#DEBUG=%{optflags} %{ld
 bunzip2 -c %SOURCE1 > ../language/plan.lang.norwegian
 
 %install
-rm -rf $RPM_BUILD_ROOT
 # Install the launchscript in %{_bindir} and the executeable itself in %{_libdir}
 install -m755 ./src/plan.bash -D $RPM_BUILD_ROOT%{_bindir}/plan
 install -m755 ./src/plan -D $RPM_BUILD_ROOT%{_libdir}/plan/plan
@@ -143,23 +133,7 @@ StartupNotify=true
 Categories=Motif;Office;ProjectManagement;
 EOF
 
-%if %mdkversion < 200900
-%post
-%{update_menus}
-%{update_icon_cache hicolor}
-%endif
-
-%if %mdkversion < 200900
-%postun
-%{clean_menus}
-%{clean_icon_cache hicolor}
-%endif
-
-%clean 
-rm -rf $RPM_BUILD_ROOT 
-
 %files 
-%defattr(-,root,root)
 %doc HISTORY README
 %{_bindir}/plan
 %{_bindir}/pland
@@ -172,11 +146,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/mandriva-%{name}.desktop
 
 %files netplan
-%defattr(-,root,root)
 %{_bindir}/netplan
 %{_mandir}/man1/netplan.1*
 
 %files tools
-%defattr(-,root,root)
 %{_bindir}/msschedule2plan
 %{_bindir}/plan2vcs
+
