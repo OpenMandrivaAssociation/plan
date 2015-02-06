@@ -1,7 +1,7 @@
 Name:		plan
 Summary:	A day planner
 Version:	1.10.1
-Release:	7
+Release:	8
 License:	GPL
 Group:		Office
 URL:		http://www.bitrot.de/plan.html
