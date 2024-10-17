@@ -4,7 +4,7 @@ Version:	1.10.1
 Release:	8
 License:	GPL
 Group:		Office
-URL:		http://www.bitrot.de/plan.html
+URL:		https://www.bitrot.de/plan.html
 Source0:	ftp://ftp.fu-berlin.de/unix/X11/apps/plan/%{name}-%{version}.tar.gz
 # Additional source for Norwegian translation which is not in the main distribution of plan yet
 Source1:	%{name}.lang.norwegian.bz2
