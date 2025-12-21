@@ -10,6 +10,11 @@ Source0:	ftp://ftp.fu-berlin.de/unix/X11/apps/plan/%{name}-%{version}.tar.gz
 Source1:	%{name}.lang.norwegian.bz2
 # Adds a launch script for plan and Mandriva Linux standards to the configure script
 Patch0:		plan-configure-and-launchscript.patch
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xt)
 BuildRequires:	pkgconfig(xmu)
